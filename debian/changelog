@@ -1,0 +1,305 @@
+docker.io (1.6.2~dfsg1-1~bpo8+1) jessie-backports; urgency=medium
+
+  * Rebuild for jessie-backports.
+
+ -- Paul Tagliamonte <paultag@debian.org>  Tue, 02 Jun 2015 19:25:10 -0400
+
+docker.io (1.6.2~dfsg1-1) unstable; urgency=medium
+
+  * Update to 1.6.2 upstream release
+  * Update deps in d/control to match upstream's hack/vendor.sh specifications
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 21 May 2015 00:47:43 -0600
+
+docker.io (1.6.1+dfsg1-2) unstable; urgency=medium
+
+  * Add --no-restart-on-upgrade to dh_installinit so that we don't force
+    a stop on upgrade, which can cause other units to fall over. Many thanks
+    to Michael Stapelberg (sECuRE) for the tip!
+
+ -- Paul Tagliamonte <paultag@debian.org>  Sun, 10 May 2015 13:02:54 -0400
+
+docker.io (1.6.1+dfsg1-1) unstable; urgency=high
+
+  * Update to 1.6.1 upstream release (Closes: #784726)
+    - CVE-2015-3627
+      Insecure opening of file-descriptor 1 leading to privilege escalation
+    - CVE-2015-3629
+      Symlink traversal on container respawn allows local privilege escalation
+    - CVE-2015-3630
+      Read/write proc paths allow host modification & information disclosure
+    - CVE-2015-3631
+      Volume mounts allow LSM profile escalation
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Fri, 08 May 2015 17:57:10 -0600
+
+docker.io (1.6.0+dfsg1-1) unstable; urgency=medium
+
+  * Upload to unstable
+  * Backport PR 12943 to support golang-go-patricia 2.*
+  * Remove convenience copies of cgroupfs-mount in init.d / upstart scripts
+    (Re: #783143)
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Tue, 05 May 2015 15:10:49 -0600
+
+docker.io (1.6.0+dfsg1-1~exp1) experimental; urgency=medium
+
+  * Update to 1.6.0 upstream release
+  * Adjust "repack.sh" to be more tolerant of "dfsg" suffixes
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 16 Apr 2015 18:00:21 -0600
+
+docker.io (1.6.0~rc7~dfsg1-1~exp1) experimental; urgency=low
+
+  * Update to 1.6.0-rc7 upstream release
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Wed, 15 Apr 2015 19:35:46 -0600
+
+docker.io (1.6.0~rc4~dfsg1-1) experimental; urgency=low
+
+  [ Tianon Gravi ]
+  * Update to 1.6.0-rc4 upstream release
+    - drop golang 1.2 support (no longer supported upstream)
+    - update Homepage to https://dockerproject.com
+    - add check-config.sh to /usr/share/docker.io/contrib
+    - add "distribution" as a new multitarball orig
+    - backport auto "btrfs_noversion" patch from
+      https://github.com/docker/docker/pull/12048
+      (simplifying our logic for detecting whether to use it)
+    - switch from dh-golang to direct install since we're not actually using the
+      features it offers (due to upstream's build system)
+    - enable "docker.service" on boot by default for restart policies to work
+
+  [ Felipe Sateler ]
+  * Add Built-Using for glibc (Closes: #769351).
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Mon, 06 Apr 2015 17:11:33 -0600
+
+docker.io (1.5.0~dfsg1-1) experimental; urgency=low
+
+  * Update to 1.5.0 upstream release (Closes: #773495)
+  * Remove several patches applied upstream!
+    - 9637-fix-nuke-bashism.patch
+    - enable-non-amd64-arches.patch
+  * Fix btrfs-tools handling to allow for building with btrfs-tools < 1.16.1
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Tue, 10 Mar 2015 22:58:49 -0600
+
+docker.io (1.3.3~dfsg1-2) unstable; urgency=medium
+
+  * Add fatal-error-old-kernels.patch to make Docker refuse to start on old,
+    unsupported kernels (Closes: #774376)
+  * Fix dh_auto_clean to clean up after the build properly, especially to avoid
+    FTBFS when built twice (Closes: #774482)
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Sat, 03 Jan 2015 00:11:47 -0700
+
+docker.io (1.3.3~dfsg1-1) unstable; urgency=medium
+
+  [ Tianon Gravi ]
+  * Update to 1.3.3 upstream release (Closes: #772909)
+    - Fix for CVE-2014-9356 (Path traversal during processing of absolute
+      symlinks)
+    - Fix for CVE-2014-9357 (Escalation of privileges during decompression of
+      LZMA (.xz) archives)
+    - Fix for CVE-2014-9358 (Path traversal and spoofing opportunities presented
+      through image identifiers)
+  * Fix bashism in nuke-graph-directory.sh (Closes: #772261)
+
+  [ Didier Roche ]
+  * Support starting systemd service without /etc/default/docker
+    (Closes: #770293)
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 18 Dec 2014 21:54:12 -0700
+
+docker.io (1.3.2~dfsg1-1) unstable; urgency=high
+
+  * Severity is set to high due to the sensitive nature of the CVEs this
+    upload fixes.
+  * Update to 1.3.2 upstream release
+    - Fix for CVE-2014-6407 (Archive extraction host privilege escalation)
+    - Fix for CVE-2014-6408 (Security options applied to image could lead
+                             to container escalation)
+  * Remove Daniel Mizyrycki from Uploaders. Thanks for all your work!
+
+ -- Paul Tagliamonte <paultag@debian.org>  Mon, 24 Nov 2014 19:14:28 -0500
+
+docker.io (1.3.1~dfsg1-2) unstable; urgency=medium
+
+  * Remove deprecated /usr/bin/docker.io symlink
+    - added as a temporary shim in 1.0.0~dfsg1-1 (13 Jun 2014)
+    - unused by package-installed files in 1.2.0~dfsg1-1 (13 Sep 2014)
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Fri, 07 Nov 2014 13:11:34 -0700
+
+docker.io (1.3.1~dfsg1-1) unstable; urgency=high
+
+  * Update to 1.3.1 upstream release
+    - fix for CVE-2014-5277
+    - https://groups.google.com/d/topic/docker-user/oYm0i3xShJU/discussion
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Mon, 03 Nov 2014 08:26:29 -0700
+
+docker.io (1.3.0~dfsg1-1) unstable; urgency=medium
+
+  * Updated to 1.3.0 upstream release.
+  * Enable systemd socket activation (Closes: #752555).
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Fri, 17 Oct 2014 00:56:07 -0600
+
+docker.io (1.2.0~dfsg1-2) unstable; urgency=medium
+
+  * Added "golang-docker-dev" package for the reusable bits of Docker's source.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 09 Oct 2014 00:08:11 +0000
+
+docker.io (1.2.0~dfsg1-1) unstable; urgency=medium
+
+  * Updated to 1.2.0 upstream release (Closes: #757183, #757023, #757024).
+  * Added upstream man pages.
+  * Updated bash and zsh completions to be installed as "docker" and "_docker".
+  * Updated init scripts to also be installed as "docker".
+  * Fixed "equivalent" typo in README.Debian (Closes: #756395). Thanks Reuben!
+  * Removed "docker.io" mention in README.Debian (Closes: #756290). Thanks
+    Olivier!
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Sat, 13 Sep 2014 11:43:17 -0600
+
+docker.io (1.0.0~dfsg1-1) unstable; urgency=medium
+
+  * Updated to 1.0.0 upstream release. Huzzah!
+  * I've removed what is commonly called a `button' of patches against
+    the docker package. Exact patches:
+     - bash-completion-docker.io.patch
+     - systemd-docker.io.patch
+     - sysvinit-provides-docker.io.patch
+     - zsh-completion-docker.io.patch
+     - mkimage-docker.io.patch
+  * I know y'all are guessing why; and the answer's pretty simple -- we're
+    no longer docker.io(1). Since the src:docker package now ships wmdocker(1),
+    we can safely declare a breaks/replaces on the pre-wmdocker version of the
+    package, allowing existing users to safely update, both src:docker and
+    src:docker.io side. This brings us into line with other distros, which
+    now ship wmdocker(1) and docker(1).
+  * As a stop-gap, I'm still shipping a docker.io(1) symlink to allow
+    migration away.
+
+ -- Paul Tagliamonte <paultag@debian.org>  Fri, 13 Jun 2014 21:04:53 -0400
+
+docker.io (0.11.1~dfsg1-1) unstable; urgency=medium
+
+  [ Paul Tagliamonte ]
+  * Use EnvironmentFile with the systemd unit file. (Closes: #746774)
+  * Patch out version checking code. (Closes: #747140)
+  * Remove all host checking for non-amd64 host arches. Let docker build
+    and run on all platforms now. (Closes: #747139, #739914)
+
+  [ Tianon Gravi ]
+  * Updated to 0.11.1 upstream release.
+  * Added backported upstream patch for removing RemoteAddr assumptions
+    that cause events to not be delivered to more than one unix socket
+    listener.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Fri, 09 May 2014 17:30:45 -0400
+
+docker.io (0.9.1~dfsg1-2) unstable; urgency=medium
+
+  * Added upstream apparmor patch to fix newer apparmor versions (such as the
+    version appearing in Ubuntu 14.04).
+  * Added mkimage-* docker.io binary name patches (Closes: #740855).
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Tue, 08 Apr 2014 23:19:08 -0400
+
+docker.io (0.9.1~dfsg1-1) unstable; urgency=medium
+
+  * Updated to 0.9.1 upstream release (Closes: #743424).
+  * Added cgroupfs-mount dependency (Closes: #742641).
+  * Added Suggests entries for optional features, chiefly lxc (Closes: #742081).
+  * Added notes about "root-equivalence" to README.Debian (Closes: #742387).
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 03 Apr 2014 21:38:30 -0400
+
+docker.io (0.9.0+dfsg1-1) unstable; urgency=medium
+
+  * Updated README.Debian to not be quite so outdated (Closes: #740850).
+  * Updated to 0.9.0 upstream release.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Tue, 11 Mar 2014 22:24:31 -0400
+
+docker.io (0.8.1+dfsg1-1) unstable; urgency=medium
+
+  * Updated to 0.8.1 upstream release.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Tue, 25 Feb 2014 20:56:31 -0500
+
+docker.io (0.8.0+dfsg1-2) unstable; urgency=medium
+
+  [ Tianon Gravi ]
+  * Added more license notes to debian/copyright (Closes: #738627).
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Sat, 15 Feb 2014 17:51:58 -0500
+
+docker.io (0.8.0+dfsg1-1) unstable; urgency=medium
+
+  [ Prach Pongpanich ]
+  * Added zsh completion.
+
+  [ Tianon Gravi ]
+  * Updated to 0.8.0 upstream release.
+  * Added vim syntax files in new vim-syntax-docker package.
+  * Added note about minimum recommended kernel version to Description.
+  * Added contrib/*-integration files in /usr/share/docker.io/contrib.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Mon, 10 Feb 2014 20:41:10 -0500
+
+docker.io (0.7.6+dfsg1-1) unstable; urgency=medium
+
+  [ Johan Euphrosine ]
+  * Updated to 0.7.6.
+  * Added dependency to gocapability.
+  * Clean patches.
+
+  [ Tianon Gravi ]
+  * Added contrib/mk* scripts from upstream into /usr/share/docker.io/contrib
+    (Closes: #736068).
+  * Added upstream udev rules file to stop device-mapper devices and mounts from
+    appearing in desktop environments through udisks.
+
+ -- Johan Euphrosine <proppy@google.com>  Wed, 22 Jan 2014 22:50:47 -0500
+
+docker.io (0.7.1+dfsg1-1) unstable; urgency=medium
+
+  [ Prach Pongpanich ]
+  * Fixed "docker: command not found" errors while using bash tab completion
+    (Closes: #735372).
+
+  [ Tianon Gravi ]
+  * Updated to 0.7.1 upstream release (while we wait for gocapability to be
+    packaged).
+  * Added xz-utils recommend which is required for decompressing certain images
+    from the index.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Wed, 15 Jan 2014 20:22:34 -0500
+
+docker.io (0.6.7+dfsg1-3) unstable; urgency=medium
+
+  * Fixed FTBFS on non-amd64 platforms by setting the correct GOPATH.
+  * Fixed issues with Docker finding a valid dockerinit (Closes: #734758).
+  * Added aufs-tools dependency.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Thu, 09 Jan 2014 20:10:20 -0500
+
+docker.io (0.6.7+dfsg1-2) unstable; urgency=medium
+
+  * Added iptables dependency required for Docker to start.
+  * Added ca-certificates recommend required for pulling from the index.
+
+ -- Tianon Gravi <admwiggin@gmail.com>  Wed, 08 Jan 2014 19:14:02 -0500
+
+docker.io (0.6.7+dfsg1-1) unstable; urgency=medium
+
+  * Initial release (Closes: #706060, #730569)
+  * Document missing licenses in the source tree. Bad, paultag. Thanks
+    alteholz.
+
+ -- Paul Tagliamonte <paultag@debian.org>  Tue, 07 Jan 2014 21:06:10 -0500

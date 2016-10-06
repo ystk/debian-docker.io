@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e
+
+mkdir -p "${DOCKER_TARBALLS:=../tarballs}"
+
+pkg="$(dpkg-parsechangelog -SSource)"
+ver="$(dpkg-parsechangelog -SVersion)"
+origVer="${ver%-*}" # strip everything from the last dash
+origVer="$(echo "$origVer" | sed -r 's/^[0-9]+://')" # strip epoch
+upstreamVer="${origVer%%[+~]dfsg*}"
+origTarballPrefix="${DOCKER_TARBALLS}/${pkg}_${origVer}.orig"
+unprunedTarballPrefix="${DOCKER_TARBALLS}/${pkg}_${upstreamVer}.orig"
+
+if command -v curl &> /dev/null; then
+	curl='curl -sSL'
+elif command -v wget &> /dev/null; then
+	curl='wget -qO-'
+else
+	echo >&2 'error: missing "curl" or "wget" - install one or the other'
+	exit 1
+fi
+
+get_hack_vendor() {
+	for path in hack/vendor.sh project/vendor.sh; do
+		if [ -e "${origTarballPrefix}.tar.gz" ]; then
+			# if we have the main orig tarball handy, let's prefer that
+			if tar -xzOf "${origTarballPrefix}.tar.gz" --wildcards '*/'"$path"; then
+				return
+			fi
+		else
+			# but fall back to grabbing it raw from github otherwise
+			if $curl "https://raw.githubusercontent.com/docker/docker/v${upstreamVer}/$path"; then
+				return
+			fi
+		fi
+	done
+}
+
+if libcontainerCommit="$(get_hack_vendor | grep -m1 '^clone git github.com/docker/libcontainer ' | cut -d' ' -f4)" && [ "$libcontainerCommit" ]; then
+	$curl "https://github.com/docker/libcontainer/archive/${libcontainerCommit}.tar.gz" > "${unprunedTarballPrefix}-libcontainer.tar.gz"
+
+	echo "successfully fetched ${unprunedTarballPrefix}-libcontainer.tar.gz"
+	echo "  (from libcontainer commit $libcontainerCommit)"
+
+	"$(dirname "$(readlink -f "$BASH_SOURCE")")/../repack.sh" --upstream-version "$upstreamVer" "${unprunedTarballPrefix}-libcontainer.tar.gz"
+fi
+
+if libtrustCommit="$(get_hack_vendor | grep -m1 '^clone git github.com/docker/libtrust ' | cut -d' ' -f4)" && [ "$libtrustCommit" ]; then
+	$curl "https://github.com/docker/libtrust/archive/${libtrustCommit}.tar.gz" > "${unprunedTarballPrefix}-libtrust.tar.gz"
+
+	echo "successfully fetched ${unprunedTarballPrefix}-libtrust.tar.gz"
+	echo "  (from libtrust commit $libtrustCommit)"
+
+	"$(dirname "$(readlink -f "$BASH_SOURCE")")/../repack.sh" --upstream-version "$upstreamVer" "${unprunedTarballPrefix}-libtrust.tar.gz"
+fi
+
+if distributionCommit="$(get_hack_vendor | grep -m1 '^clone git github.com/docker/distribution ' | cut -d' ' -f4)" && [ "$distributionCommit" ]; then
+	$curl "https://github.com/docker/distribution/archive/${distributionCommit}.tar.gz" > "${unprunedTarballPrefix}-distribution.tar.gz"
+
+	echo "successfully fetched ${unprunedTarballPrefix}-distribution.tar.gz"
+	echo "  (from distribution commit $distributionCommit)"
+
+	"$(dirname "$(readlink -f "$BASH_SOURCE")")/../repack.sh" --upstream-version "$upstreamVer" "${unprunedTarballPrefix}-distribution.tar.gz"
+fi
